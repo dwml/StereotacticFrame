@@ -1,2 +1,2 @@
-SimpleITK
+itk
 numpy
