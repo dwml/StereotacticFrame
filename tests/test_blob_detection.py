@@ -4,7 +4,6 @@ from StereotacticFrame.blob_detection import BlobDetection
 import pytest
 import numpy as np
 import itk
-import matplotlib.pyplot as plt
 
 
 def _create_numpy_blob(
@@ -114,8 +113,6 @@ def test_blob_detection_two_centers(two_blobs) -> None:
 def test_blob_detection_find_small_ignore_big(six_small_blobs_one_big_blob) -> None:
     num_blobs = 6
     bd = BlobDetection(six_small_blobs_one_big_blob, num_blobs)
-    plt.imshow(six_small_blobs_one_big_blob)
-    plt.show()
 
     blob_list = bd.detect_blobs()
 
