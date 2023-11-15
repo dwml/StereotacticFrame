@@ -1,12 +1,14 @@
 import itk
-
+import matplotlib.pyplot as plt
 
 def _detect_blobs(img_slice, num_circles: int) -> list[tuple[float, float]]:
     blob_detector = itk.HoughTransform2DCirclesImageFilter[itk.D, itk.UL, itk.F].New()
     blob_detector.SetInput(img_slice)
     blob_detector.SetNumberOfCircles(num_circles)
     blob_detector.SetMinimumRadius(1)
-    blob_detector.SetMaximumRadius(8)
+    blob_detector.SetMaximumRadius(5)
+    blob_detector.SetVariance(10)
+
     blob_detector.Update()
     circles = blob_detector.GetCircles()
 
