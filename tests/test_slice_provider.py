@@ -1,35 +1,28 @@
 from StereotacticFrame.slice_provider import AxialSliceProvider
-import itk
-import tempfile
+from itk import GetArrayFromImage, imread
 import pytest
 import numpy as np
 from pathlib import Path
 
-TEST_SHAPE = (250, 275, 300)  # i, j, k in itk is k, j, i in numpy
+TEST_SHAPE = (50, 75, 100)  # i, j, k in itk is k, j, i in numpy
 
 
 @pytest.fixture(scope="module")
-def temp_image_path():
-    temp_path = Path(tempfile.mkdtemp())
-    temp_array = np.zeros(TEST_SHAPE)
-    temp_img = itk.GetImageFromArray(temp_array)
-    temp_img[0, 25, 50] = 1  # this indexing is numpy indexing, so k, j, i
-    temp_img[249, 75, 100] = 1
-    orienter = itk.OrientImageFilter.New(temp_img)
-    orienter.UseImageDirectionOn()
-    orienter.SetDesiredCoordinateOrientationToSagittal()
-    temp_img = orienter.GetOutput()
-    temp_file = temp_path.joinpath("tmp_img.nii.gz")
-    itk.imwrite(temp_img, str(temp_file))
-    yield temp_file
-    temp_file.unlink()
-    temp_path.rmdir()
+def test_image_path():
+    """Shape:(50, 75, 100, orientation: sagittal
+    all zeros except for [0, 25, 50] and [49, 50, 75]"""
+    return Path("./data/slice_provider/sagittal_oriented_img.nii.gz")
 
 
 # reading the itk image takes long, so I put this in a module scoped fixture
 @pytest.fixture(scope="module")
-def slice_provider(temp_image_path):
-    return AxialSliceProvider(temp_image_path)
+def slice_provider(test_image_path):
+    return AxialSliceProvider(test_image_path)
+
+
+@pytest.fixture(scope="module")
+def test_image(test_image_path):
+    return imread(test_image_path)
 
 
 # however we need to reset the counter of the slice provider
@@ -48,11 +41,11 @@ def test_slice_provider_initializes_fails_without_path() -> None:
         sp = AxialSliceProvider()
 
 
-def test_slice_provider_loads_image_on_initialization(slice_provider, temp_image_path) -> None:
-    img = itk.imread(temp_image_path)
+def test_slice_provider_loads_image_on_initialization(slice_provider, test_image) -> None:
     assert np.allclose(
-        itk.GetArrayFromImage(slice_provider._image),
-        itk.GetArrayFromImage(img))
+        GetArrayFromImage(slice_provider._image),
+        GetArrayFromImage(test_image)
+    )
 
 
 def test_slice_provider_rai_image_in_correct_orientation(slice_provider) -> None:
@@ -76,17 +69,17 @@ def test_slice_provider_provides_correct_shape(slice_provider) -> None:
     assert given_size == (TEST_SHAPE[2], TEST_SHAPE[1])
 
 
-def test_slice_provider_provides_superior_slice_first(slice_provider, temp_image_path) -> None:
+def test_slice_provider_provides_superior_slice_first(slice_provider) -> None:
     # In the fixture I set the 0, 0 index of the superior slice to 1
     assert slice_provider.next_slice()[25, 50] == 1.
 
 
-def test_slice_provider_provides_inferior_slice_last(slice_provider, temp_image_path) -> None:
+def test_slice_provider_provides_inferior_slice_last(slice_provider) -> None:
     axial_slice = None
     while not slice_provider.is_empty():
         axial_slice = slice_provider.next_slice()
 
-    assert axial_slice[75, 100] == 1.
+    assert axial_slice[50, 75] == 1.
 
 
 def test_slice_provider_provides_all_slices(slice_provider) -> None:
