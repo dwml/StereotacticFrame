@@ -3,7 +3,8 @@ from typing import Tuple
 from StereotacticFrame.blob_detection import BlobDetection
 import pytest
 import numpy as np
-import itk
+from itk import imread  # full import takes too long
+from pathlib import Path
 
 
 def _create_numpy_blob(size: Tuple[int, int], center: Tuple[int, int], diameter: float, spacing: float,
@@ -17,39 +18,25 @@ def _create_numpy_blob(size: Tuple[int, int], center: Tuple[int, int], diameter:
 
 @pytest.fixture(scope="module")
 def one_blob():
-    blob = _create_numpy_blob(size=(100, 100), center=(25, 50), diameter=3, spacing=0.5, intensity=255)
-    blob_img = itk.GetImageFromArray(blob)
-    blob_img.SetSpacing(0.5)
-    return blob_img
+    """size=(100, 100), center=(25, 50), diameter=3, spacing=0.5, intensity=255"""
+    return imread(Path("./data/blobs/one_blob.nii.gz"))
 
 
 @pytest.fixture(scope="module")
 def two_blobs():
-    total_size = (100, 100)
-    diameter = 6
-    spacing = 1.1
-    center1, center2 = (25, 50), (50, 75)
-    intensity1, intensity2 = 255, 125
-    blob1 = _create_numpy_blob(total_size, center1, diameter, spacing, intensity1)
-    blob2 = _create_numpy_blob(total_size, center2, diameter, spacing, intensity2)
-    blob_img = itk.GetImageFromArray(blob1 + blob2)
-    blob_img.SetSpacing(1.1)
-    return blob_img
+    """size=(100,100), diameter=6, spacing=1.1
+    blob1: center=(25,50), intensity=255
+    blob2: center=(50,75), intensity=125"""
+    return imread(Path("./data/blobs/two_blobs.nii.gz"))
 
 
 @pytest.fixture(scope="module")
 def six_small_blobs_one_big_blob():
-    total_size = (200, 200)
-    current_spacing = 1.1
-    centers = [(25, 50), (25, 100), (25, 150), (175, 50), (175, 100), (175, 150)]
-    all_blobs = np.zeros(total_size)
-    for cntr in centers:
-        all_blobs += _create_numpy_blob(total_size, center=cntr, diameter=3, spacing=current_spacing, intensity=125)
-    all_blobs += _create_numpy_blob(total_size, center=(100, 100), diameter=50, spacing=current_spacing, intensity=125)
-    blob_img = itk.GetImageFromArray(all_blobs)
-    blob_img.SetSpacing(current_spacing)
-    return blob_img
-
+    """size=(200,200), spacing=1.1
+    small blobs: diameter=3, intensity=125, centers:
+    [(25, 50), (25, 100), (25, 150), (175, 50), (175, 100), (175, 150)]
+    big blob: center=(100,100), diameter=50, intensity=255"""
+    return imread(Path("./data/blobs/six_small_blobs_one_big_blob.nii.gz"))
 
 def test_blob_detection_find_one_blob(one_blob) -> None:
     bd = BlobDetection(one_blob, 1)
