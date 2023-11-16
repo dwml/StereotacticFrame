@@ -6,12 +6,8 @@ import numpy as np
 import itk
 
 
-def _create_numpy_blob(
-        size: Tuple[int, int],
-        center: Tuple[int, int],
-        diameter: float, spacing: float,
-        intensity: float
-) -> np.ndarray[float]:
+def _create_numpy_blob(size: Tuple[int, int], center: Tuple[int, int], diameter: float, spacing: float,
+                       intensity: float) -> np.ndarray[float]:
     xx, yy = np.mgrid[:size[0], :size[1]]
     circle = np.sqrt(
         (yy - center[0]) ** 2 + (xx - center[1]) ** 2)  # Be mindful of the index inversion between itk and numpy
@@ -21,13 +17,7 @@ def _create_numpy_blob(
 
 @pytest.fixture(scope="module")
 def one_blob():
-    blob = _create_numpy_blob(
-        size=(100, 100),
-        center=(25, 50),
-        diameter=3,
-        spacing=0.5,
-        intensity=255
-    )
+    blob = _create_numpy_blob(size=(100, 100), center=(25, 50), diameter=3, spacing=0.5, intensity=255)
     blob_img = itk.GetImageFromArray(blob)
     blob_img.SetSpacing(0.5)
     return blob_img
@@ -36,20 +26,12 @@ def one_blob():
 @pytest.fixture(scope="module")
 def two_blobs():
     total_size = (100, 100)
-    blob1 = _create_numpy_blob(
-        size=total_size,
-        center=(25, 50),
-        diameter=6,
-        spacing=1.1,
-        intensity=255
-    )
-    blob2 = _create_numpy_blob(
-        size=total_size,
-        center=(50, 75),
-        diameter=6,
-        spacing=1.1,
-        intensity=125
-    )
+    diameter = 6
+    spacing = 1.1
+    center1, center2 = (25, 50), (50, 75)
+    intensity1, intensity2 = 255, 125
+    blob1 = _create_numpy_blob(total_size, center1, diameter, spacing, intensity1)
+    blob2 = _create_numpy_blob(total_size, center2, diameter, spacing, intensity2)
     blob_img = itk.GetImageFromArray(blob1 + blob2)
     blob_img.SetSpacing(1.1)
     return blob_img
@@ -59,31 +41,11 @@ def two_blobs():
 def six_small_blobs_one_big_blob():
     total_size = (200, 200)
     current_spacing = 1.1
-    centers = [
-        (25, 50),
-        (25, 100),
-        (25, 150),
-        (175, 50),
-        (175, 100),
-        (175, 150),
-    ]
+    centers = [(25, 50), (25, 100), (25, 150), (175, 50), (175, 100), (175, 150)]
     all_blobs = np.zeros(total_size)
     for cntr in centers:
-        all_blobs += \
-            _create_numpy_blob(
-                size=total_size,
-                center=cntr,
-                diameter=3,
-                spacing=current_spacing,
-                intensity=125
-            )
-    all_blobs += _create_numpy_blob(
-        size=total_size,
-        center=(100, 100),
-        diameter=50,
-        spacing=current_spacing,
-        intensity=125,
-    )
+        all_blobs += _create_numpy_blob(total_size, center=cntr, diameter=3, spacing=current_spacing, intensity=125)
+    all_blobs += _create_numpy_blob(total_size, center=(100, 100), diameter=50, spacing=current_spacing, intensity=125)
     blob_img = itk.GetImageFromArray(all_blobs)
     blob_img.SetSpacing(current_spacing)
     return blob_img

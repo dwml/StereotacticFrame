@@ -1,29 +1,43 @@
 import itk
 import matplotlib.pyplot as plt
+from typing import Callable
+
+def _point_to_continuous_index(point):
+    continuous_index = itk.ContinuousIndex[itk.D, 2]()
+    continuous_index.SetElement(0, point[0])
+    continuous_index.SetElement(1, point[1])
+    return continuous_index
+
+def _setup_hough_2d_circles_filter(num_circles: int, min_radius: float = 1,
+                                   max_radius: float = 5, variance: float = 10):
+    """The user still needs to specify the input and update the filter:
+
+    hough.SetInput(img)
+    hough.Update()
+    circles = hough.GetCircles()
+    """
+    hough = itk.HoughTransform2DCirclesImageFilter[itk.D, itk.UL, itk.F].New()
+    hough.SetNumberOfCircles(num_circles)
+    hough.SetMinimumRadius(min_radius)
+    hough.SetMaximumRadius(max_radius)
+    hough.SetVariance(variance)
+    return hough
+
+def _transform_points_to_physical_centers(points: tuple[float, float], transform_to_physical: Callable):
+    physical_centers = []
+    for id_point in range(len(points)):
+        center = points[id_point].GetCenterInObjectSpace()
+        physical_centers.append(transform_to_physical(_point_to_continuous_index(center)))
+    return physical_centers
+
+
 
 def _detect_blobs(img_slice, num_circles: int) -> list[tuple[float, float]]:
-    blob_detector = itk.HoughTransform2DCirclesImageFilter[itk.D, itk.UL, itk.F].New()
+    blob_detector = _setup_hough_2d_circles_filter(num_circles)
     blob_detector.SetInput(img_slice)
-    blob_detector.SetNumberOfCircles(num_circles)
-    blob_detector.SetMinimumRadius(1)
-    blob_detector.SetMaximumRadius(5)
-    blob_detector.SetVariance(10)
-
     blob_detector.Update()
     circles = blob_detector.GetCircles()
-
-    # Get physical centers
-    physical_centers = []
-    for id_circle in range(len(circles)):
-        object_center = circles[id_circle].GetCenterInObjectSpace()
-        index = itk.ContinuousIndex[itk.D, 2]()
-        index.SetElement(0, object_center[0])
-        index.SetElement(1, object_center[1])
-
-        physical_centers.append(
-            img_slice.TransformContinuousIndexToPhysicalPoint(index))
-
-    return physical_centers
+    return _transform_points_to_physical_centers(circles, img_slice.TransformContinuousIndexToPhysicalPoint)
 
 
 class BlobDetection:
