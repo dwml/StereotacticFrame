@@ -39,6 +39,7 @@ def six_small_blobs_one_big_blob():
     big blob: center=(100,100), diameter=50, intensity=255"""
     return imread(Path("tests/data/blob_detection/six_small_blobs_one_big_blob.nii.gz"))
 
+
 def test_finds_one_blob(one_blob) -> None:
     bd = BlobDetection(one_blob, 1)
     blobs = bd.detect_blobs()

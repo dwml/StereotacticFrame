@@ -19,7 +19,12 @@ setup(
     },
     packages=find_packages(),
     install_requires=["itk", "numpy"],
+    extras_require={
+        "dev": [
+            "pytest",
+            "pytest-cov",
+            "flake8"
+        ]
+    },
     python_requires=">=3.9",
-
-
 )
