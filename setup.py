@@ -17,14 +17,14 @@ setup(
     project_urls={
         "Issues": "https://github.com/SFNNijmegen/StereotacticFrame/issues"
     },
-    packages=find_packages(include="src/StereotacticFrame"),
+    packages=find_packages("src"),
     package_dir={"": "src"},
-    install_requires=["wheel", "build", "itk", "numpy"],
+    install_requires=["itk", "numpy"],
     extras_require={
         "dev": [
+            "flake8",
             "pytest",
             "pytest-cov",
-            "flake8"
         ]
     },
     python_requires=">=3.9",
