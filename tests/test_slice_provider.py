@@ -11,7 +11,7 @@ TEST_SHAPE = (50, 75, 100)  # i, j, k in itk is k, j, i in numpy
 def test_image_path():
     """Shape:(50, 75, 100, orientation: sagittal
     all zeros except for [0, 25, 50] and [49, 50, 75]"""
-    return Path("./data/slice_provider/sagittal_oriented_img.nii.gz")
+    return Path("tests/data/slice_provider/sagittal_oriented_img.nii.gz")
 
 
 # reading the itk image takes long, so I put this in a module scoped fixture
@@ -32,23 +32,23 @@ def reset_counter(slice_provider):
     return slice_provider
 
 
-def test_slice_provider_initializes_with_image(slice_provider) -> None:
+def test_initializing_with_image(slice_provider) -> None:
     assert slice_provider._image is not None
 
 
-def test_slice_provider_initializes_fails_without_path() -> None:
+def test_initializing_fails_without_path() -> None:
     with pytest.raises(TypeError):
         sp = AxialSliceProvider()
 
 
-def test_slice_provider_loads_image_on_initialization(slice_provider, test_image) -> None:
+def test_loads_image_on_initialization(slice_provider, test_image) -> None:
     assert np.allclose(
         GetArrayFromImage(slice_provider._image),
         GetArrayFromImage(test_image)
     )
 
 
-def test_slice_provider_rai_image_in_correct_orientation(slice_provider) -> None:
+def test_rai_image_in_correct_orientation(slice_provider) -> None:
     """Check if slice_provider correctly reorients to RAI
 
     RAI in this context means left to Right, posterior towards Anterior
@@ -64,17 +64,17 @@ def test_slice_provider_rai_image_in_correct_orientation(slice_provider) -> None
     )
 
 
-def test_slice_provider_provides_correct_shape(slice_provider) -> None:
+def test_provides_correct_shape(slice_provider) -> None:
     given_size = slice_provider.next_slice().GetBufferedRegion().GetSize()
     assert given_size == (TEST_SHAPE[2], TEST_SHAPE[1])
 
 
-def test_slice_provider_provides_superior_slice_first(slice_provider) -> None:
+def test_provides_superior_slice_first(slice_provider) -> None:
     # In the fixture I set the 0, 0 index of the superior slice to 1
     assert slice_provider.next_slice()[25, 50] == 1.
 
 
-def test_slice_provider_provides_inferior_slice_last(slice_provider) -> None:
+def test_provides_inferior_slice_last(slice_provider) -> None:
     axial_slice = None
     while not slice_provider.is_empty():
         axial_slice = slice_provider.next_slice()
@@ -82,7 +82,7 @@ def test_slice_provider_provides_inferior_slice_last(slice_provider) -> None:
     assert axial_slice[50, 75] == 1.
 
 
-def test_slice_provider_provides_all_slices(slice_provider) -> None:
+def test_provides_all_slices(slice_provider) -> None:
     slice_counter = 0
     while not slice_provider.is_empty():
         _ = slice_provider.next_slice()
