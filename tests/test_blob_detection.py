@@ -3,8 +3,8 @@ from typing import Tuple
 from StereotacticFrame.blob_detection import BlobDetection
 import pytest
 import numpy as np
-from itk import imread  # full import takes too long
 from pathlib import Path
+import SimpleITK as sitk
 
 
 def _create_numpy_blob(size: Tuple[int, int], center: Tuple[int, int], diameter: float, spacing: float,
@@ -20,7 +20,7 @@ def _create_numpy_blob(size: Tuple[int, int], center: Tuple[int, int], diameter:
 @pytest.fixture(scope="module")
 def one_blob():
     """size=(100, 100), center=(25, 50), diameter=3, spacing=0.5, intensity=255"""
-    return imread(Path("tests/data/blob_detection/one_blob.nii.gz"))
+    return sitk.ReadImage(Path("tests/data/blob_detection/one_blob.nii.gz"))
 
 
 @pytest.fixture(scope="module")
@@ -28,7 +28,7 @@ def two_blobs():
     """size=(100,100), diameter=6, spacing=1.1
     blob1: center=(25,50), intensity=255
     blob2: center=(50,75), intensity=125"""
-    return imread(Path("tests/data/blob_detection/two_blobs.nii.gz"))
+    return sitk.ReadImage(Path("tests/data/blob_detection/two_blobs.nii.gz"))
 
 
 @pytest.fixture(scope="module")
@@ -37,7 +37,7 @@ def six_small_blobs_one_big_blob():
     small blobs: diameter=3, intensity=125, centers:
     [(25, 50), (25, 100), (25, 150), (175, 50), (175, 100), (175, 150)]
     big blob: center=(100,100), diameter=50, intensity=255"""
-    return imread(Path("tests/data/blob_detection/six_small_blobs_one_big_blob.nii.gz"))
+    return sitk.ReadImage(Path("tests/data/blob_detection/six_small_blobs_one_big_blob.nii.gz"))
 
 
 def test_finds_one_blob(one_blob) -> None:
