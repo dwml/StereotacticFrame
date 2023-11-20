@@ -51,8 +51,4 @@ def test_t1_15T_threshold_gives_seven_objects(mr_path, connected_component_filte
     img = preprocessor.processed_image
     cc = connected_component_filter(img)
 
-    import matplotlib.pyplot as plt
-    plt.imshow(sitk.GetArrayFromImage(cc))
-    plt.show()
-
     assert sitk.GetArrayFromImage(cc).max() == 7
