@@ -25,6 +25,7 @@ setup(
             "flake8",
             "pytest",
             "pytest-cov",
+            "matplotlib"
         ]
     },
     python_requires=">=3.9",
