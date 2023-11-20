@@ -2,14 +2,11 @@ from pathlib import Path
 from itk import itkOrientImageFilterPython, itkExtractImageFilterPython
 from itk import imread
 from itk import size as itk_size
+import SimpleITK as sitk
 
 
 def _reorient_rai(img):
-    orienter = itkOrientImageFilterPython.itkOrientImageFilterID3ID3.New(img)
-    orienter.UseImageDirectionOn()
-    orienter.SetDesiredCoordinateOrientationToAxial()  # equivalent to RAI
-    orienter.Update()
-    return orienter.GetOutput()
+    return sitk.DICOMOrient(img, "RAI")
 
 
 def _setup_extractor(image, region):
@@ -46,15 +43,14 @@ def _extract_slice(itk_img, slice_number: int):
 class AxialSliceProvider:
     def __init__(self, image_path: Path):
         self._image_path: Path = image_path
-        self._image = imread(self._image_path)
+        self._image = sitk.ReadImage(self._image_path)
         self._rai_image = _reorient_rai(self._image)
         self._counter: int = 0
-        self._n_axial_slices: int = itk_size(self._rai_image)[2]
+        self._n_axial_slices: int = self._rai_image.GetSize()[-1]
 
     def next_slice(self):
-        extracted_slice = _extract_slice(self._rai_image, self._counter)
         self._counter += 1
-        return extracted_slice
+        return self._rai_image[..., self._counter - 1]
 
     def is_empty(self) -> bool:
         if self._counter >= self._n_axial_slices:
