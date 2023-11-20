@@ -19,7 +19,7 @@ setup(
     },
     packages=find_packages("src"),
     package_dir={"": "src"},
-    install_requires=["itk", "numpy", "SimpleITK"],
+    install_requires=["numpy", "SimpleITK"],
     extras_require={
         "dev": [
             "flake8",

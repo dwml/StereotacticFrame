@@ -1,43 +1,9 @@
 from pathlib import Path
-from itk import itkOrientImageFilterPython, itkExtractImageFilterPython
-from itk import imread
-from itk import size as itk_size
 import SimpleITK as sitk
 
 
 def _reorient_rai(img):
     return sitk.DICOMOrient(img, "RAI")
-
-
-def _setup_extractor(image, region):
-    """User should still update and get image:
-
-    extractor.Update()
-    extraction = extractor.GetOutput()"""
-    extractor = itkExtractImageFilterPython.itkExtractImageFilterID3ID2.New()
-    extractor.SetInput(image)
-    extractor.SetDirectionCollapseToSubmatrix()
-    extractor.SetExtractionRegion(region)
-    return extractor
-
-
-def _setup_region(input_region, size, start):
-    desired_region = input_region
-    desired_region.SetSize(size)
-    desired_region.SetIndex(start)
-    return desired_region
-
-
-def _extract_slice(itk_img, slice_number: int):
-    input_region = itk_img.GetBufferedRegion()
-    size = input_region.GetSize()
-    size[2] = 0  # collapse along z
-    start = input_region.GetIndex()
-    start[2] = slice_number
-
-    extractor = _setup_extractor(itk_img, _setup_region(input_region, size, start))
-    extractor.Update()
-    return extractor.GetOutput()
 
 
 class AxialSliceProvider:
