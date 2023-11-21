@@ -1,4 +1,5 @@
 from StereotacticFrame.slice_provider import AxialSliceProvider
+from StereotacticFrame.preprocessor import Preprocessor
 import pytest
 import numpy as np
 from pathlib import Path
@@ -18,13 +19,12 @@ def test_image_path():
 # reading the itk image takes long, so I put this in a module scoped fixture
 @pytest.fixture(scope="module")
 def slice_provider(test_image_path):
-    return AxialSliceProvider(test_image_path)
+    return AxialSliceProvider(test_image_path, Preprocessor("MR"))
 
 
 @pytest.fixture(scope="module")
 def test_image(test_image_path):
     test_img = sitk.ReadImage(test_image_path)
-    print(test_img.GetSize())
     return sitk.ReadImage(test_image_path)
 
 

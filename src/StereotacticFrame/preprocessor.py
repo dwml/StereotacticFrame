@@ -1,13 +1,19 @@
 import SimpleITK as sitk
-from functools import partial
+from functools import partial, reduce
 from typing import Callable
+
+ImageToImageCallable = Callable[[sitk.Image], sitk.Image]
 
 
 def _compose_two_functions(f: Callable, g: Callable):
     return lambda *a, **kw: f(g(*a, **kw))
 
 
-def _li_threshold() -> Callable:
+def _compose(*fs):
+    return reduce(_compose_two_functions, fs)
+
+
+def _li_threshold() -> ImageToImageCallable:
     li = sitk.LiThresholdImageFilter()
     li.SetInsideValue(0)
     li.SetOutsideValue(1)
@@ -15,8 +21,8 @@ def _li_threshold() -> Callable:
     return li.Execute
 
 
-_ct_pipeline = partial(sitk.BinaryThreshold, lowerThreshold=900, upperThreshold=30_000, insideValue=1, outsideValue=0)
-_mr_pipeline = _compose_two_functions(sitk.BinaryMorphologicalClosing, _li_threshold())
+_ct_pipeline = partial(sitk.BinaryThreshold, lowerThreshold=1500, upperThreshold=30_000, insideValue=1, outsideValue=0)
+_mr_pipeline = _compose(sitk.BinaryMorphologicalClosing, _li_threshold())
 
 ImageToImageCallable = Callable[[sitk.Image], sitk.Image]
 _threshold_map: dict[str, ImageToImageCallable] = {
@@ -26,7 +32,7 @@ _threshold_map: dict[str, ImageToImageCallable] = {
 
 
 class Preprocessor:
-    def __init__(self,  modality):
+    def __init__(self, modality):
         self._modality: str = modality
         self._thresholder: ImageToImageCallable = _threshold_map[self._modality]
 

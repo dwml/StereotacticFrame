@@ -4,6 +4,8 @@ from pathlib import Path
 import pytest
 from typing import Callable
 
+import matplotlib.pyplot as plt
+
 DATA_PATH = Path('tests/data/preprocessor')
 
 CT_PATH = DATA_PATH.joinpath('test_ct_axial_slice.nii.gz')
@@ -32,13 +34,13 @@ def connected_component_filter() -> Callable:
     return cc_filter.Execute
 
 
-def test_ct_threshold_gives_twelve_objects(ct_image, connected_component_filter) -> None:
+def test_ct_threshold_gives_seven_objects(ct_image, connected_component_filter) -> None:
     preprocessor = Preprocessor("CT")
 
     processed_img = preprocessor.process(ct_image)
     cc = connected_component_filter(processed_img)
 
-    assert sitk.GetArrayFromImage(cc).max() == 12
+    assert sitk.GetArrayFromImage(cc).max() == 7
 
 
 @pytest.mark.parametrize("mr_path", MR_PATHS)

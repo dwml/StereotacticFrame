@@ -19,13 +19,13 @@ setup(
     },
     packages=find_packages("src"),
     package_dir={"": "src"},
-    install_requires=["numpy", "SimpleITK"],
+    install_requires=["numpy", "SimpleITK", "pyvista", "vtk"],
     extras_require={
         "dev": [
             "flake8",
             "pytest",
             "pytest-cov",
-            "matplotlib"
+            "pytest-profiling",
         ]
     },
     python_requires=">=3.9",
