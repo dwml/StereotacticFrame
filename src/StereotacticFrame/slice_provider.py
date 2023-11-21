@@ -9,8 +9,8 @@ def _reorient_rai(img):
 class AxialSliceProvider:
     def __init__(self, image_path: Path):
         self._image_path: Path = image_path
-        self._image = sitk.ReadImage(self._image_path)
-        self._rai_image = _reorient_rai(self._image)
+        self._image: sitk.Image = sitk.ReadImage(self._image_path)
+        self._rai_image: sitk.Image = _reorient_rai(self._image)
         self._counter: int = 0
         self._n_axial_slices: int = self._rai_image.GetSize()[-1]
 
@@ -22,3 +22,7 @@ class AxialSliceProvider:
         if self._counter >= self._n_axial_slices:
             return True
         return False
+
+    def get_current_z_coordinate(self) -> float:
+        point = self._rai_image.TransformIndexToPhysicalPoint([0, 0, self._counter - 1])
+        return point[2]
