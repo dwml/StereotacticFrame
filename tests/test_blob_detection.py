@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from StereotacticFrame.blob_detection import BlobDetection
+from StereotacticFrame.blob_detection import detect_blobs
 import pytest
 import numpy as np
 from pathlib import Path
@@ -41,32 +41,25 @@ def six_small_blobs_one_big_blob():
 
 
 def test_finds_one_blob(one_blob) -> None:
-    bd = BlobDetection(one_blob, 1)
-    blobs = bd.detect_blobs()
+    blobs = detect_blobs(one_blob)
     assert len(blobs) == 1
 
 
 def test_finds_correct_center(one_blob) -> None:
-    bd = BlobDetection(one_blob, 1)
-    blob_list = bd.detect_blobs()
+    blob_list = detect_blobs(one_blob)
     assert (blob_list[0][0], blob_list[0][1]) == pytest.approx((25 * 0.5, 50 * 0.5))
 
 
 def test_finds_two_centers(two_blobs) -> None:
-    bd = BlobDetection(two_blobs, 2)
-
-    blob_list = bd.detect_blobs()
+    blob_list = detect_blobs(two_blobs)
 
     assert (blob_list[0][0], blob_list[0][1]) == pytest.approx((25 * 1.1, 50 * 1.1))
     assert (blob_list[1][0], blob_list[1][1]) == pytest.approx((50 * 1.1, 75 * 1.1))
 
 
 def test_finds_small_blobs_ignores_big_blob(six_small_blobs_one_big_blob) -> None:
-    num_blobs = 6
-    bd = BlobDetection(six_small_blobs_one_big_blob, num_blobs)
+    blob_list = detect_blobs(six_small_blobs_one_big_blob)
 
-    blob_list = bd.detect_blobs()
-
-    assert len(blob_list) == num_blobs
+    assert len(blob_list) == 6
     assert (blob_list[0][0], blob_list[0][1]) == pytest.approx((25 * 1.1, 50 * 1.1))
     assert (blob_list[5][0], blob_list[5][1]) == pytest.approx((175 * 1.1, 150 * 1.1))
