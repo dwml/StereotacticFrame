@@ -33,22 +33,20 @@ def connected_component_filter() -> Callable:
 
 
 def test_ct_threshold_gives_twelve_objects(ct_image, connected_component_filter) -> None:
-    preprocessor = Preprocessor(ct_image, modality="CT")
-    preprocessor.process()
+    preprocessor = Preprocessor("CT")
 
-    img = preprocessor.processed_image
-    cc = connected_component_filter(img)
+    processed_img = preprocessor.process(ct_image)
+    cc = connected_component_filter(processed_img)
 
     assert sitk.GetArrayFromImage(cc).max() == 12
 
 
 @pytest.mark.parametrize("mr_path", MR_PATHS)
-def test_t1_15T_threshold_gives_seven_objects(mr_path, connected_component_filter) -> None:
+def test_t1_15t_threshold_gives_seven_objects(mr_path, connected_component_filter) -> None:
     img = sitk.ReadImage(mr_path)
-    preprocessor = Preprocessor(img, modality="MR")
-    preprocessor.process()
+    preprocessor = Preprocessor("MR")
 
-    img = preprocessor.processed_image
-    cc = connected_component_filter(img)
+    processed_img = preprocessor.process(img)
+    cc = connected_component_filter(processed_img)
 
     assert sitk.GetArrayFromImage(cc).max() == 7
