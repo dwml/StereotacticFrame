@@ -40,6 +40,7 @@ TEST_CT_IMAGE_TRANSFORM = (
 )
 
 
+@pytest.mark.longrun
 def test_align_leksell_frame_mr() -> None:
     detector = FrameDetector(
         LeksellFrame(),
@@ -54,6 +55,7 @@ def test_align_leksell_frame_mr() -> None:
     assert frame_transform.GetParameters() == pytest.approx(TEST_MR_IMAGE_TRANSFORM, rel=1e-3)
 
 
+@pytest.mark.longrun
 def test_align_leksell_frame_ct() -> None:
     detector = FrameDetector(
         LeksellFrame(),
