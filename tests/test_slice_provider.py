@@ -24,7 +24,6 @@ def slice_provider(test_image_path):
 
 @pytest.fixture(scope="module")
 def test_image(test_image_path):
-    test_img = sitk.ReadImage(test_image_path)
     return sitk.ReadImage(test_image_path)
 
 

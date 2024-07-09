@@ -1,9 +1,8 @@
 from pathlib import Path
 import pytest
-import SimpleITK as sitk
 
 from StereotacticFrame.frames import LeksellFrame
-from StereotacticFrame.frame_detector import FrameDetector, calculate_frame_extent_3d
+from StereotacticFrame.frame_detector import FrameDetector
 from StereotacticFrame.slice_provider import AxialSliceProvider
 from StereotacticFrame.blob_detection import detect_blobs
 from StereotacticFrame.preprocessor import Preprocessor
