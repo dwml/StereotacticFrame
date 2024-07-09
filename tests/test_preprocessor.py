@@ -4,8 +4,6 @@ from pathlib import Path
 import pytest
 from typing import Callable
 
-import matplotlib.pyplot as plt
-
 DATA_PATH = Path('tests/data/preprocessor')
 
 CT_PATH = DATA_PATH.joinpath('test_ct_axial_slice.nii.gz')
