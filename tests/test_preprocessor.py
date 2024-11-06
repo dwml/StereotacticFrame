@@ -1,4 +1,4 @@
-from StereotacticFrame.preprocessor import Preprocessor
+from stereotacticframe.preprocessor import Preprocessor
 import SimpleITK as sitk
 from pathlib import Path
 import pytest
