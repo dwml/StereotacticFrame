@@ -1,5 +1,5 @@
-from StereotacticFrame.slice_provider import AxialSliceProvider
-from StereotacticFrame.preprocessor import Preprocessor
+from stereotacticframe.slice_provider import AxialSliceProvider
+from stereotacticframe.preprocessor import Preprocessor
 import pytest
 import numpy as np
 from pathlib import Path

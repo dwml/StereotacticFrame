@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from StereotacticFrame.blob_detection import detect_blobs
+from stereotacticframe.blob_detection import detect_blobs
 import pytest
 import numpy as np
 from pathlib import Path

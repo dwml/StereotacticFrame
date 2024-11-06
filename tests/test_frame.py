@@ -1,11 +1,11 @@
 from pathlib import Path
 import pytest
 
-from StereotacticFrame.frames import LeksellFrame
-from StereotacticFrame.frame_detector import FrameDetector
-from StereotacticFrame.slice_provider import AxialSliceProvider
-from StereotacticFrame.blob_detection import detect_blobs
-from StereotacticFrame.preprocessor import Preprocessor
+from stereotacticframe.frames import LeksellFrame
+from stereotacticframe.frame_detector import FrameDetector
+from stereotacticframe.slice_provider import AxialSliceProvider
+from stereotacticframe.blob_detection import detect_blobs
+from stereotacticframe.preprocessor import Preprocessor
 
 TEST_MR_IMAGE_PATH = Path('tests/data/frame/t1_15T_test_volume.nii.gz')
 TEST_MR_IMAGE_TRANSFORM = (
