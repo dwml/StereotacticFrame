@@ -31,6 +31,7 @@ The package has a command line interface that can be run using
 
 The *image_path* should be the path to the input image, the *modality* should be one of **MR** or **CT** and *transform_path* is an optional path of the output transform.
 
+# Warning
 
 > [!CAUTION]
 > In no circumstances can one use this package for clinical purposes. It is not thoroughly tested on a variety of images and should therefore only be used for research purposes.
