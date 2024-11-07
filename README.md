@@ -31,6 +31,10 @@ The package has a command line interface that can be run using
 
 The *image_path* should be the path to the input image, the *modality* should be one of **MR** or **CT** and *transform_path* is an optional path of the output transform.
 
+# Issues
+
+Since this package is only tested on our own imaging it would not be strange if it does not work adequately on your data. If so please submit an issue at the [issue page](https://github.com/dwml/StereotacticFrame/issues).
+
 # Warning
 
 > [!CAUTION]
