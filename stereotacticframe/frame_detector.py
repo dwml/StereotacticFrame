@@ -23,18 +23,18 @@ class FrameProtocol(Protocol):
 
 class SliceProviderProtocol(Protocol):
     def next_slice(self) -> sitk.Image:
-        pass
+        ...
 
     def is_empty(self) -> bool:
-        pass
+        ...
 
     def get_current_z_coordinate(self) -> float:
-        pass
+        ...
 
 
 class PreprocessorProtocol(Protocol):
     def process(self, image: sitk.Image) -> sitk.Image:
-        pass
+        ...
 
 
 BlobDetectorType = Callable[[sitk.Image], list[tuple[float, float]]]
@@ -48,7 +48,7 @@ def _create_lines(
         point0 = nodes[edge[0]]
         point1 = nodes[edge[1]]
         line_mesh += pv.Line(point0, point1)  # type: ignore
-    return line_mesh
+    return line_mesh  # type: ignore
 
 
 def _iterative_closest_point(
@@ -87,7 +87,7 @@ def calculate_frame_extent_3d(
         frame_dimensions: tuple[float, float, float],
         voxel_spacing: tuple[float, float, float],
         offset: tuple[float, float, float],
-) -> tuple[int, int, int]:
+) -> tuple[int, ...]:
     extent = tuple()
     for dim in range(len(frame_dimensions)):
         frame_dim = frame_dimensions[dim]
@@ -126,6 +126,10 @@ class FrameDetector:
         self._point_cloud = pv.PolyData(np.asarray(blobs_list))
 
     def get_transform_to_frame_space(self) -> sitk.Transform:
+
+        if self._point_cloud == None:
+            raise ValueError("Detect frame was not run or there is a problem with detect frame.")
+
         if self._modality == "CT":
             # Remove lowest 25 percentile
             points = self._point_cloud.points
