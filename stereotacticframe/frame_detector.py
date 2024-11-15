@@ -5,7 +5,9 @@ import SimpleITK as sitk
 import numpy as np
 import pyvista as pv
 from vtk import vtkIterativeClosestPointTransform, vtkMatrix4x4
+import logging
 
+logger = logging.getLogger(__name__)
 
 class FrameProtocol(Protocol):
     dimensions: tuple[int, int, int]
@@ -167,8 +169,24 @@ class FrameDetector:
         refined_transform.Invert()
         new_cloud.transform(refined_transform)
         final_transform = _iterative_closest_point(new_cloud, self._frame_object, iterations=300)
-        point_cloud = self._point_cloud.copy()
-        point_cloud.transform(final_transform)
+        new_cloud.transform(final_transform)
+
+        closest_points_in_frame = self._calculate_closest_points_in_frame_to(new_cloud.points)
+        self._set_mean_max(closest_points_in_frame, new_cloud.points)
+
+        logger.info(f"Mean detection error: {self._mean_error}") 
+        logger.info(f"Max detection error: {self._max_error}") 
 
         final_itk_transform = _transform4x4_to_sitk_affine(final_transform)
         return final_itk_transform.GetInverse()
+    
+    def _calculate_closest_points_in_frame_to(self, points: pv.NumpyArray) -> pv.NumpyArray:
+        _, closest_distances = self._frame_object.find_closest_cell(
+            points, return_closest_point=True
+        )
+        return closest_distances
+    
+    def _set_mean_max(self, points: pv.NumpyArray, poly_points: pv.NumpyArray) -> None:
+        distances = np.linalg.norm(points - poly_points, axis=1)
+        self._mean_error = distances.mean()
+        self._max_error = distances.max() 

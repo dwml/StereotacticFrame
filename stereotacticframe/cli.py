@@ -3,6 +3,7 @@ import typer
 import SimpleITK as sitk
 from pathlib import Path
 from typing import Optional
+import logging
 
 from stereotacticframe.frames import LeksellFrame
 from stereotacticframe.frame_detector import FrameDetector
@@ -37,4 +38,5 @@ def calculate_frame_transform(
 
 
 def main() -> None:
+    logging.basicConfig(level=logging.INFO)
     typer.run(calculate_frame_transform)
