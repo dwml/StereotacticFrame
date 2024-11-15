@@ -5,7 +5,9 @@ import SimpleITK as sitk
 import numpy as np
 import pyvista as pv
 from vtk import vtkIterativeClosestPointTransform, vtkMatrix4x4
+import logging
 
+logger = logging.getLogger(__name__)
 
 class FrameProtocol(Protocol):
     dimensions: tuple[int, int, int]
@@ -21,18 +23,18 @@ class FrameProtocol(Protocol):
 
 class SliceProviderProtocol(Protocol):
     def next_slice(self) -> sitk.Image:
-        pass
+        ...
 
     def is_empty(self) -> bool:
-        pass
+        ...
 
     def get_current_z_coordinate(self) -> float:
-        pass
+        ...
 
 
 class PreprocessorProtocol(Protocol):
     def process(self, image: sitk.Image) -> sitk.Image:
-        pass
+        ...
 
 
 BlobDetectorType = Callable[[sitk.Image], list[tuple[float, float]]]
@@ -46,7 +48,7 @@ def _create_lines(
         point0 = nodes[edge[0]]
         point1 = nodes[edge[1]]
         line_mesh += pv.Line(point0, point1)  # type: ignore
-    return line_mesh
+    return line_mesh  # type: ignore
 
 
 def _iterative_closest_point(
@@ -85,7 +87,7 @@ def calculate_frame_extent_3d(
         frame_dimensions: tuple[float, float, float],
         voxel_spacing: tuple[float, float, float],
         offset: tuple[float, float, float],
-) -> tuple[int, int, int]:
+) -> tuple[int, ...]:
     extent = tuple()
     for dim in range(len(frame_dimensions)):
         frame_dim = frame_dimensions[dim]
@@ -124,6 +126,10 @@ class FrameDetector:
         self._point_cloud = pv.PolyData(np.asarray(blobs_list))
 
     def get_transform_to_frame_space(self) -> sitk.Transform:
+
+        if self._point_cloud == None:
+            raise ValueError("Detect frame was not run or there is a problem with detect frame.")
+
         if self._modality == "CT":
             # Remove lowest 25 percentile
             points = self._point_cloud.points
@@ -167,8 +173,24 @@ class FrameDetector:
         refined_transform.Invert()
         new_cloud.transform(refined_transform)
         final_transform = _iterative_closest_point(new_cloud, self._frame_object, iterations=300)
-        point_cloud = self._point_cloud.copy()
-        point_cloud.transform(final_transform)
+        new_cloud.transform(final_transform)
+
+        closest_points_in_frame = self._calculate_closest_points_in_frame_to(new_cloud.points)
+        self._set_mean_max(closest_points_in_frame, new_cloud.points)
+
+        logger.info(f"Mean detection error: {self._mean_error}") 
+        logger.info(f"Max detection error: {self._max_error}") 
 
         final_itk_transform = _transform4x4_to_sitk_affine(final_transform)
         return final_itk_transform.GetInverse()
+    
+    def _calculate_closest_points_in_frame_to(self, points: pv.NumpyArray) -> pv.NumpyArray:
+        _, closest_distances = self._frame_object.find_closest_cell(
+            points, return_closest_point=True
+        )
+        return closest_distances
+    
+    def _set_mean_max(self, points: pv.NumpyArray, poly_points: pv.NumpyArray) -> None:
+        distances = np.linalg.norm(points - poly_points, axis=1)
+        self._mean_error = distances.mean()
+        self._max_error = distances.max() 
