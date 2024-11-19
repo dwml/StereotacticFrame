@@ -7,18 +7,9 @@ import pyvista as pv
 from vtk import vtkIterativeClosestPointTransform, vtkMatrix4x4
 import logging
 
+from stereotacticframe.frame_protocol import FrameProtocol
+
 logger = logging.getLogger(__name__)
-
-class FrameProtocol(Protocol):
-    dimensions: tuple[int, int, int]
-    offset: tuple[float, float, float]
-    direction: tuple[float, float, float, float, float, float, float, float, float]
-    nodes: list[tuple[float, float, float]]
-    ct_edges: list[tuple[int, int]]
-    mr_edges: list[tuple[int, int]]
-
-    def get_edges(self, modality: str) -> list[tuple[int, int]]:
-        ...
 
 
 class SliceProviderProtocol(Protocol):

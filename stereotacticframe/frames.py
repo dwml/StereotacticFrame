@@ -1,7 +1,6 @@
 class ModalityNotFoundError(Exception):
     ...
 
-
 class LeksellFrame:
     """Nodes and edges of Leksell fiducial box."""
 
