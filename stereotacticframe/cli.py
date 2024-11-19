@@ -10,8 +10,12 @@ from stereotacticframe.frame_detector import FrameDetector
 from stereotacticframe.slice_provider import AxialSliceProvider
 from stereotacticframe.blob_detection import detect_blobs
 from stereotacticframe.preprocessor import Preprocessor
+from stereotacticframe.transforms import apply_transform
 
-def calculate_frame_transform(
+app = typer.Typer()
+
+@app.command()
+def calculate(
         input_image_path: Path,
         modality: str,
         output_transform_path: Optional[Path],
@@ -36,7 +40,16 @@ def calculate_frame_transform(
     
     sitk.WriteTransform(transform, output_transform_path)
 
+@app.command()
+def apply(image_path: Path, transform_path: Path, output_image_path: Path):
+    frame = LeksellFrame()
+
+    image = sitk.ReadImage(image_path)
+    transform = sitk.ReadTransform(transform_path)
+
+    sitk.WriteImage(apply_transform(image, transform, frame), output_image_path)
+
 
 def main() -> None:
     logging.basicConfig(level=logging.INFO)
-    typer.run(calculate_frame_transform)
+    app()
