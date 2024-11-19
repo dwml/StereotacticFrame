@@ -27,9 +27,13 @@ Use poetry to install the package. For installation instructions for poetry see 
 
 The package has a command line interface that can be run using
 
-```calculate_frame_transform image_path modality transform_path```
+```frame_transform calculate image_path modality transform_path```
 
 The *image_path* should be the path to the input image, the *modality* should be one of **MR** or **CT** and *transform_path* is an optional path of the output transform.
+
+One can apply the transform using:
+
+```frame_transform apply image_path transform_path output_image_path```
 
 # Issues
 
