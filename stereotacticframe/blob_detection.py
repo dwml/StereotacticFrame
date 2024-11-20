@@ -17,14 +17,16 @@ def detect_blobs(img_slice: sitk.Image) -> list[tuple[float, float]]:
         if not 3 < label_statistics.GetPhysicalSize(label_idx) < 15:  # [mm²]
             continue
 
-        if label_statistics.GetWeightedElongation(label_idx) < 1.5:
-            blobs_list.append(label_statistics.GetCenterOfGravity(label_idx))
-            logging.debug(f"Logging physical size: {label_statistics.GetPhysicalSize(label_idx)} for label {label_idx}")
-            logging.debug(f"Logging elongation: {label_statistics.GetElongation(label_idx)} for label {label_idx}")
-            logging.debug(f"Logging principal axes: {label_statistics.GetPrincipalAxes(label_idx)} for label {label_idx}")
-            logging.debug(f"Logging principal moments: {label_statistics.GetPrincipalMoments(label_idx)} for label {label_idx}")
-            logging.debug(f"Logging weighted elongation: {label_statistics.GetWeightedElongation(label_idx)} for label {label_idx}")
-            logging.debug(f"Logging weighted principal axes: {label_statistics.GetWeightedPrincipalAxes(label_idx)} for label {label_idx}")
-            logging.debug(f"Logging weighted principal moments: {label_statistics.GetWeightedPrincipalMoments(label_idx)} for label {label_idx}")
+        blobs_list.append(label_statistics.GetCenterOfGravity(label_idx))
+        logging.debug(f"Logging physical size: {label_statistics.GetPhysicalSize(label_idx)} for label {label_idx}")
+        logging.debug(f"Logging elongation: {label_statistics.GetElongation(label_idx)} for label {label_idx}")
+        logging.debug(f"Logging principal axes: {label_statistics.GetPrincipalAxes(label_idx)} for label {label_idx}")
+        logging.debug(f"Logging principal moments: {label_statistics.GetPrincipalMoments(label_idx)} for label {label_idx}")
+        logging.debug(f"Logging weighted elongation: {label_statistics.GetWeightedElongation(label_idx)} for label {label_idx}")
+        logging.debug(f"Logging weighted principal axes: {label_statistics.GetWeightedPrincipalAxes(label_idx)} for label {label_idx}")
+        logging.debug(f"Logging weighted principal moments: {label_statistics.GetWeightedPrincipalMoments(label_idx)} for label {label_idx}")
+        logging.debug(f"Logging feret diameter: {label_statistics.GetFeretDiameter(label_idx)} for label {label_idx}")
+        logging.debug(f"Logging roundness: {label_statistics.GetRoundness(label_idx)} for label {label_idx}")
+
 
     return blobs_list
