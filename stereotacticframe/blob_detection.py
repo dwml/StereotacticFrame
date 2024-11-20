@@ -14,7 +14,7 @@ def detect_blobs(img_slice: sitk.Image) -> list[tuple[float, float]]:
 
     for label_idx in label_statistics.GetLabels():
         # For now do one check, probably not robust enough
-        if not label_statistics.GetPhysicalSize(label_idx) < 5:  # [mm²]
+        if not 3 < label_statistics.GetPhysicalSize(label_idx) < 15:  # [mm²]
             continue
 
         if label_statistics.GetWeightedElongation(label_idx) < 1.5:
