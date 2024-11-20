@@ -19,7 +19,16 @@ def calculate(
         input_image_path: Path,
         modality: str,
         output_transform_path: Optional[Path],
+        log_dir: Optional[Path],
+        logging_on: bool=False,
 ) -> None:
+    if log_dir:
+        fh = logging.FileHandler(log_dir)
+        if logging_on:
+            fh.setLevel(logging.DEBUG)
+        logging.root.addHandler(fh)
+    if logging_on:
+        logging.root.setLevel(logging.DEBUG)
 
     # This could be generalized to any frame with a frame option    
     frame = LeksellFrame()
@@ -39,6 +48,7 @@ def calculate(
         output_transform_path = Path("./output.txt")
     
     sitk.WriteTransform(transform, output_transform_path)
+
 
 @app.command()
 def apply(image_path: Path, transform_path: Path, output_image_path: Path):
