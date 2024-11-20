@@ -21,7 +21,7 @@ def _li_threshold() -> ImageToImageCallable:
     return li.Execute
 
 
-_ct_pipeline = partial(sitk.BinaryThreshold, lowerThreshold=1500, upperThreshold=30_000, insideValue=1, outsideValue=0)
+_ct_pipeline = partial(sitk.BinaryThreshold, lowerThreshold=500, upperThreshold=30_000, insideValue=1, outsideValue=0)
 _mr_pipeline = _compose(sitk.BinaryMorphologicalClosing, _li_threshold())
 
 ImageToImageCallable = Callable[[sitk.Image], sitk.Image]
