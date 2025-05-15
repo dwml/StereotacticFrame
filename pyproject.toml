@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "StereotacticFrame"
-version = "0.1.0"
+version = "0.3.0"
 description = "A package to register MR and CT images to frame space"
 authors = ["dwml <dwm.loeffen@hotmail.com>"]
 license = "MIT"
