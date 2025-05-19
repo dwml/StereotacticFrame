@@ -12,7 +12,6 @@ def _compose_two_functions(f: Callable, g: Callable):
 def _compose(*fs):
     return reduce(_compose_two_functions, fs)
 
-
 def _li_threshold() -> ImageToImageCallable:
     li = sitk.LiThresholdImageFilter()
     li.SetInsideValue(0)
@@ -20,11 +19,20 @@ def _li_threshold() -> ImageToImageCallable:
     li.SetNumberOfHistogramBins(256)
     return li.Execute
 
+def _binary_dilate() -> ImageToImageCallable:
+    dilate = sitk.BinaryDilateImageFilter()
+    dilate.SetKernelRadius(2)
+    dilate.SetKernelType(sitk.sitkBall)
+    return dilate.Execute
 
-_ct_pipeline = partial(sitk.BinaryThreshold, lowerThreshold=500, upperThreshold=30_000, insideValue=1, outsideValue=0)
+
+_ct_pipeline = _compose(
+    _binary_dilate(),
+    partial(sitk.BinaryThreshold, lowerThreshold=1000, upperThreshold=10_000, insideValue=1, outsideValue=0),
+)
+
 _mr_pipeline = _compose(sitk.BinaryMorphologicalClosing, _li_threshold())
 
-ImageToImageCallable = Callable[[sitk.Image], sitk.Image]
 _threshold_map: dict[str, ImageToImageCallable] = {
     "CT": _ct_pipeline,
     "MR": _mr_pipeline,

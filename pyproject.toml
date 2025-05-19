@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "StereotacticFrame"
-version = "0.3.0"
+version = "0.4.0"
 description = "A package to register MR and CT images to frame space"
 authors = ["dwml <dwm.loeffen@hotmail.com>"]
 license = "MIT"
@@ -9,7 +9,6 @@ license = "MIT"
 python = "^3.9"
 numpy = "^2.0.0"
 SimpleITK = "^2.3.1"
-matplotlib = "^3.9.1"
 pyvista = "^0.44.0"
 typer = "^0.12.5"
 
