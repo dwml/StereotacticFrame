@@ -14,13 +14,14 @@ from stereotacticframe.transforms import apply_transform
 
 app = typer.Typer()
 
+
 @app.command()
 def calculate(
-        input_image_path: Path,
-        modality: str,
-        output_transform_path: Optional[Path],
-        log_dir: Optional[Path],
-        logging_on: bool=False,
+    input_image_path: Path,
+    modality: str,
+    output_transform_path: Optional[Path],
+    log_dir: Optional[Path],
+    logging_on: bool = False,
 ) -> None:
     if log_dir:
         fh = logging.FileHandler(log_dir)
@@ -30,7 +31,7 @@ def calculate(
     if logging_on:
         logging.root.setLevel(logging.DEBUG)
 
-    # This could be generalized to any frame with a frame option    
+    # This could be generalized to any frame with a frame option
     frame = LeksellFrame()
 
     preprocessor = Preprocessor(modality)
@@ -46,7 +47,7 @@ def calculate(
 
     if not output_transform_path:
         output_transform_path = Path("./output.txt")
-    
+
     sitk.WriteTransform(transform, output_transform_path)
 
 
