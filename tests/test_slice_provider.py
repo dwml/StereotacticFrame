@@ -46,7 +46,7 @@ def test_initializing_fails_without_path() -> None:
 def test_loads_image_on_initialization(slice_provider, test_image) -> None:
     assert np.allclose(
         sitk.GetArrayFromImage(slice_provider._image),
-        sitk.GetArrayFromImage(test_image)
+        sitk.GetArrayFromImage(test_image),
     )
 
 
@@ -60,31 +60,34 @@ def test_rai_image_in_correct_orientation(slice_provider) -> None:
     rai_img = slice_provider._rai_image
     given_direction = rai_img.GetDirection()
     assert np.allclose(
-        np.array(given_direction),
-        np.array([-1, 0, 0, 0, -1, 0, 0, 0, -1])
+        np.array(given_direction), np.array([-1, 0, 0, 0, -1, 0, 0, 0, -1])
     )
 
 
 def test_provides_correct_shape(slice_provider) -> None:
-    given_size = slice_provider.next_slice().GetSize()
-    assert given_size == (TEST_SHAPE[2], TEST_SHAPE[1])
+    img, mask = slice_provider.next_image_mask_pair()
+    assert img.GetSize() == (TEST_SHAPE[2], TEST_SHAPE[1])
+    assert mask.GetSize() == (TEST_SHAPE[2], TEST_SHAPE[1])
 
 
 def test_provides_superior_slice_first(slice_provider) -> None:
     # In the fixture I set the 0, 0 index of the superior slice to 1
-    assert slice_provider.next_slice()[50, 25] == 1.
+    img, _ = slice_provider.next_image_mask_pair()
+    assert img[50, 25] == 1.0
 
 
 def test_provides_inferior_slice_last(slice_provider) -> None:
-    axial_slice = None
+    axial_img = None
     while not slice_provider.is_empty():
-        axial_slice = slice_provider.next_slice()
-    assert axial_slice[75, 50] == 1.  # simple itk uses
+        axial_img, _ = slice_provider.next_image_mask_pair()
+
+    assert axial_img is not None
+    assert axial_img[75, 50] == 1.0  # simple itk uses
 
 
 def test_provides_all_slices(slice_provider) -> None:
     slice_counter = 0
     while not slice_provider.is_empty():
-        _ = slice_provider.next_slice()
+        _ = slice_provider.next_image_mask_pair()
         slice_counter += 1
     assert slice_counter == TEST_SHAPE[0]
