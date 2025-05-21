@@ -8,36 +8,37 @@ from stereotacticframe.slice_provider import AxialSliceProvider
 from stereotacticframe.blob_detection import detect_blobs
 from stereotacticframe.preprocessor import Preprocessor
 
-TEST_MR_IMAGE_PATH = Path('tests/data/frame/t1_15T_test_volume.nii.gz')
+TEST_MR_IMAGE_PATH = Path("tests/data/frame/t1_15T_test_volume.nii.gz")
 TEST_MR_IMAGE_TRANSFORM = (
-    0.9996653816333939,
-    0.011034004838061145,
-    -0.02339605735576057,
-    -0.011705640565821797,
-    0.9995175935123912,
-    -0.028767311975645075,
-    0.023067352286390348,
-    0.029031551742779993,
-    0.9993122966626321,
-    -103.67341398961031,
-    18.743326210988375,
-    88.02954852538946
+    0.9996676804848265,
+    0.010930228058566386,
+    -0.02334649242747307,
+    -0.011601636801316218,
+    0.9995173089262706,
+    -0.02881928486880874,
+    0.023020221927894116,
+    0.029080565183757807,
+    0.9993119583551053,
+    -103.67898738835223,
+    18.730087615696412,
+    88.04311831261525,
 )
-TEST_CT_IMAGE_PATH = Path('tests/data/frame/test_ct_volume.nii.gz')
+TEST_CT_IMAGE_PATH = Path("tests/data/frame/test_ct_volume.nii.gz")
 TEST_CT_IMAGE_TRANSFORM = (
-    0.9994320154332311,
-    0.030685957171562618,
-    -0.013929054484864391,
-    -0.03049838954021026,
-    0.999443855455037,
-    0.013484362375847148,
-    0.014335088483545996,
-    -0.013051889736526734,
-    0.9998120590451058,
-    -96.7252957400852,
-    64.64233541730367,
-    -761.0438588901762
+    0.9994265672889243,
+    0.03087832954201341,
+    -0.013894796212411534,
+    -0.030686668989739038,
+    0.999433759481864,
+    0.013801766345933938,
+    0.014313103905296437,
+    -0.013367466949590448,
+    0.9998082045492244,
+    -96.71989590015907,
+    64.67477913829667,
+    -761.0358425980055,
 )
+
 
 @pytest.fixture
 def correct_ct_path(tmp_path) -> Path:
@@ -49,7 +50,6 @@ def correct_ct_path(tmp_path) -> Path:
     correct_ct_path = tmp_path.joinpath("ct_correct_scale.nii.gz")
     sitk.WriteImage(rescaled, correct_ct_path)
     return correct_ct_path
-    
 
 
 @pytest.mark.longrun
@@ -58,13 +58,15 @@ def test_align_leksell_frame_mr() -> None:
         LeksellFrame(),
         AxialSliceProvider(TEST_MR_IMAGE_PATH, Preprocessor("MR")),
         detect_blobs,
-        modality="MR"
+        modality="MR",
     )
 
     detector.detect_frame()
     frame_transform = detector.get_transform_to_frame_space()
 
-    assert frame_transform.GetParameters() == pytest.approx(TEST_MR_IMAGE_TRANSFORM, rel=1e-3)
+    assert frame_transform.GetParameters() == pytest.approx(
+        TEST_MR_IMAGE_TRANSFORM, rel=1e-3
+    )
 
 
 @pytest.mark.longrun
@@ -73,7 +75,7 @@ def test_align_leksell_frame_ct(correct_ct_path) -> None:
         LeksellFrame(),
         AxialSliceProvider(correct_ct_path, Preprocessor("CT")),
         detect_blobs,
-        modality="CT"
+        modality="CT",
     )
 
     detector.detect_frame()
