@@ -4,23 +4,23 @@ class ModalityNotFoundError(Exception): ...
 class LeksellFrame:
     """Nodes and edges of Leksell fiducial box."""
 
-    dimensions = (190, 120, 120)
-    extent = (210, 220, 220)
-    offset = (-10.0, 50.0, 50.0)
-    direction = (1, 0, 0, 0, -1, 0, 0, 0, -1)
+    dimensions: tuple[int, int, int] = (190, 120, 120)
+    extent: tuple[float, float, float] = (210, 22, 220)
+    offset: tuple[float, float, float] = (-10.0, 50.0, 50.0)
+    direction = (1.0, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, -1.0)
 
-    nodes = [
-        (0, 0, 0),  # 0) right posterior cranial
-        (0, -120, 0),  # 1) right anterior cranial
-        (0, 0, -120),  # 2) right posterior caudal
-        (0, -120, -120),  # 3) right anterior caudal
-        (190, 0, 0),  # 4) left posterior cranial
-        (190, -120, 0),  # 5) left anterior cranial
-        (190, 0, -120),  # 6) left posterior caudal
-        (190, -120, -120),  # 7) left anterior caudal
+    nodes: list[tuple[float, float, float]] = [
+        (0.0, 0.0, 0.0),  # 0) right posterior cranial
+        (0.0, -120.0, 0.0),  # 1) right anterior cranial
+        (0.0, 0.0, -120.0),  # 2) right posterior caudal
+        (0.0, -120.0, -120.0),  # 3) right anterior caudal
+        (190.0, 0.0, 0.0),  # 4) left posterior cranial
+        (190.0, -120.0, 0.0),  # 5) left anterior cranial
+        (190.0, 0.0, -120.0),  # 6) left posterior caudal
+        (190.0, -120.0, -120.0),  # 7) left anterior caudal
     ]
 
-    ct_edges = [
+    ct_edges: list[tuple[int, int]] = [
         (0, 2),
         (0, 3),
         (1, 3),
@@ -29,7 +29,7 @@ class LeksellFrame:
         (5, 7),
     ]
 
-    mr_edges = [
+    mr_edges: list[tuple[int, int]] = [
         (0, 1),  # cranial right anteroposterior-direction
         (0, 2),  # posterior right cranial-caudal-direction
         (0, 3),  # right diagonal

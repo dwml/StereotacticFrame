@@ -40,7 +40,7 @@ def test_initializing_with_image(slice_provider) -> None:
 
 def test_initializing_fails_without_path() -> None:
     with pytest.raises(TypeError):
-        _ = AxialSliceProvider()
+        _ = AxialSliceProvider()  # type: ignore
 
 
 def test_loads_image_on_initialization(slice_provider, test_image) -> None:
