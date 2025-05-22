@@ -1,12 +1,13 @@
-class ModalityNotFoundError(Exception):
-    ...
+class ModalityNotFoundError(Exception): ...
+
 
 class LeksellFrame:
     """Nodes and edges of Leksell fiducial box."""
 
-    dimensions = tuple([190, 120, 120])
-    offset = tuple([-10.0, 50.0, 50.0])
-    direction = tuple([1, 0, 0, 0, -1, 0, 0, 0, -1])
+    dimensions = (190, 120, 120)
+    extent = (210, 220, 220)
+    offset = (-10.0, 50.0, 50.0)
+    direction = (1, 0, 0, 0, -1, 0, 0, 0, -1)
 
     nodes = [
         (0, 0, 0),  # 0) right posterior cranial
@@ -49,3 +50,11 @@ class LeksellFrame:
         elif modality == "MR":
             return self.mr_edges
         raise ModalityNotFoundError("This modality is not recognized")
+
+    def get_size_based_on(
+        self, spacing: tuple[float, float, float]
+    ) -> tuple[int, int, int]:
+        xsize = int(self.extent[0] / spacing[0])
+        ysize = int(self.extent[1] / spacing[1])
+        zsize = int(self.extent[2] / spacing[2])
+        return (xsize, ysize, zsize)
