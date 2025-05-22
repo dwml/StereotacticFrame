@@ -3,7 +3,7 @@ from typing import Protocol
 
 class FrameProtocol(Protocol):
     dimensions: tuple[int, int, int]
-    extend: tuple[float, float, float]
+    extent: tuple[float, float, float]
     offset: tuple[float, float, float]
     direction: tuple[float, float, float, float, float, float, float, float, float]
     nodes: list[tuple[float, float, float]]
