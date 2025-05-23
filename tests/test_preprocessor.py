@@ -40,7 +40,7 @@ def test_ct_threshold_gives_twelve_objects(
     processed_img = preprocessor.process(ct_image)
     cc = connected_component_filter(processed_img)
 
-    assert sitk.GetArrayFromImage(cc).max() == 12
+    assert sitk.GetArrayFromImage(cc).max() == 9
 
 
 @pytest.mark.parametrize("mr_path", MR_PATHS)

@@ -17,27 +17,15 @@ def _li_threshold() -> ImageToImageCallable:
     li = sitk.LiThresholdImageFilter()
     li.SetInsideValue(0)
     li.SetOutsideValue(1)
-    li.SetNumberOfHistogramBins(200)
+    li.SetNumberOfHistogramBins(256)
     return li.Execute
 
 
-def _binary_dilate() -> ImageToImageCallable:
-    dilate = sitk.BinaryDilateImageFilter()
-    dilate.SetKernelRadius(2)
-    dilate.SetKernelType(sitk.sitkBall)
-    return dilate.Execute
+def _ct_pipeline(ct_image: sitk.Image) -> sitk.Image:
+    clamped = sitk.Clamp(ct_image, sitk.sitkFloat32, 512, 3072)
+    frame = sitk.OtsuThreshold(clamped, 0, 1, 256)
+    return sitk.BinaryMorphologicalClosing(frame, (5, 5, 5))
 
-
-_ct_pipeline = _compose(
-    partial(sitk.BinaryMorphologicalClosing, kernelRadius=(5, 5, 5)),
-    partial(
-        sitk.BinaryThreshold,
-        lowerThreshold=900,
-        upperThreshold=10_000,
-        insideValue=1,
-        outsideValue=0,
-    ),
-)
 
 _mr_pipeline = _compose(
     partial(sitk.BinaryMorphologicalClosing, kernelRadius=(5, 5, 5)), _li_threshold()
