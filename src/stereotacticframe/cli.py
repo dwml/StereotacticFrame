@@ -22,6 +22,7 @@ def calculate(
     output_transform_path: Optional[Path],
     log_dir: Optional[Path],
     logging_on: bool = False,
+    visualization: bool = False,
 ) -> None:
     if log_dir:
         fh = logging.FileHandler(log_dir)
@@ -39,7 +40,7 @@ def calculate(
     provider = AxialSliceProvider(input_image_path, preprocessor)
 
     # bit anoying that I have to give modality as input for preprocessor and for framedetector
-    detector = FrameDetector(frame, provider, detect_blobs, modality)
+    detector = FrameDetector(frame, provider, detect_blobs, modality, visualization)
 
     detector.detect_frame()
 
