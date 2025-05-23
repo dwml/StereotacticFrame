@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Protocol, Callable
+from typing import Protocol, Callable, Optional
 import SimpleITK as sitk
 import numpy as np
 import pyvista as pv
@@ -99,6 +99,7 @@ class FrameDetector:
         slice_provider: SliceProviderProtocol,
         blob_detector: BlobDetectorType,
         modality: str,
+        visualization: bool = False,
     ):
         self._frame = frame
         self._slice_provider = slice_provider
@@ -109,6 +110,7 @@ class FrameDetector:
             frame.get_edges(modality), frame.nodes
         )
         self._modality = modality
+        self._visualization = visualization
 
     # Quite a bit of cohesion here, not sure if it's a problem, since it has to come together somewhere
     def detect_frame(self) -> None:
@@ -124,6 +126,14 @@ class FrameDetector:
                 )
             ]
         self._point_cloud = pv.PolyData(np.asarray(blobs_list))
+
+    def _plot_cloud_and_frame(
+        self, cloud: pv.PolyData, msg: Optional[str] = None
+    ) -> None:
+        pl = pv.Plotter()
+        pl.add_mesh(cloud)
+        pl.add_mesh(self._frame_object)
+        pl.show(title=msg)
 
     def get_transform_to_frame_space(self) -> sitk.Transform:
         if self._point_cloud is None:
@@ -152,6 +162,9 @@ class FrameDetector:
 
         new_cloud = pv.PolyData(right_points) + pv.PolyData(left_points)
 
+        if self._visualization:
+            self._plot_cloud_and_frame(new_cloud, "Centroid allignment")
+
         new_cloud.transform(centroid_inverse_matrix)
 
         initial_transform = _iterative_closest_point(
@@ -166,6 +179,9 @@ class FrameDetector:
         new_cloud.transform(initial_inverse_matrix)
 
         point_cloud.transform(initial_matrix)
+
+        if self._visualization:
+            self._plot_cloud_and_frame(point_cloud, "Initial allignment")
 
         # Remove upper 20mm and lower 20mm
         new_points = point_cloud.points
@@ -190,6 +206,9 @@ class FrameDetector:
         point_cloud.transform(refined_matrix)
 
         new_cloud.transform(refined_matrix)
+
+        if self._visualization:
+            self._plot_cloud_and_frame(new_cloud, "Refined allignment")
 
         closest_points = self._calculate_closest_points_in_frame_to(
             point_cloud.points.copy()
@@ -216,6 +235,9 @@ class FrameDetector:
         final_inverse_matrix.DeepCopy(final_matrix)
         final_inverse_matrix.Invert()
         new_cloud.transform(final_matrix)
+
+        if self._visualization:
+            self._plot_cloud_and_frame(new_cloud, "Final allignment")
 
         point_cloud = self._point_cloud.copy()
         point_cloud.transform(final_matrix)
