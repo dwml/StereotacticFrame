@@ -3,7 +3,7 @@ name = "StereotacticFrame"
 version = "0.5"
 description = "A python package to put medical images in frame alignment."
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.9"
 authors = [{name="Dirk W.M. Loeffen", email="dwm.loeffen@hotmail.com"},]
 license= {file= "LICENSE"}
 dependencies = [
@@ -33,6 +33,10 @@ dev = [
 
 [project.scripts]
 frame_registration = "stereotacticframe.cli:main"
+
+[project.urls]
+Repository = "https://github.com/dwml/StereotacticFrame.git"
+Issues = "https://github.com/dwml/StereotacticFrame/issues"
 
 [build-system]
 requires = ["hatchling"]
