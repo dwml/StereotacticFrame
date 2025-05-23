@@ -9,8 +9,6 @@ jobs:
     name: Build distribution
 
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
 
     steps:
     - uses: actions/checkout@v4
