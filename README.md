@@ -6,22 +6,22 @@ A python package to detect a stereotactic frame in MR and CT images
 
 Use pip to install the package:
 
-```pip install FrameRegistration```
+```pip install StereotacticFrame```
 
 
 # Install from source
 
 Use git to clone the repository:
 
-```git clone github.com/dwml/FrameRegistration.git```
+```git clone github.com/dwml/StereotacticFrame.git```
 
 Use cd to get into the directory:
 
-```cd FrameRegistration```
+```cd StereotacticFrame```
 
-Use poetry to install the package. For installation instructions for poetry see their documentation [here](https://python-poetry.org/docs/). After poetry is installed, in the FrameRegistration directory, run:
+Use uv to install the package. For installation instructions for uv see their documentation [here](https://docs.astral.sh/uv/getting-started/installation/). After uv is installed and your working directory is the FrameRegistration directory, run:
 
-```poetry install```
+```uv build```
 
 # Usage
 
