@@ -14,7 +14,7 @@ class Processor(Protocol):
 class AxialSliceProvider:
     def __init__(self, image_path: Path, preprocessor: Processor):
         self._image_path: Path = image_path
-        self._image: sitk.Image = sitk.ReadImage(self._image_path)
+        self._image: sitk.Image = sitk.ReadImage(self._image_path, sitk.sitkFloat32)
         self._rai_image: sitk.Image = _reorient_rai(self._image)
         self._rai_mask: sitk.Image = preprocessor.process(self._rai_image)
         self._counter: int = 0

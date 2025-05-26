@@ -5,7 +5,7 @@ class LeksellFrame:
     """Nodes and edges of Leksell fiducial box."""
 
     dimensions: tuple[int, int, int] = (190, 120, 120)
-    extent: tuple[float, float, float] = (210, 22, 220)
+    extent: tuple[float, float, float] = (210, 220, 220)
     offset: tuple[float, float, float] = (-10.0, 50.0, 50.0)
     direction = (1.0, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, -1.0)
 

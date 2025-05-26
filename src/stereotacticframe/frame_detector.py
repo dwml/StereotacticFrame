@@ -154,6 +154,8 @@ class FrameDetector:
 
         point_cloud.transform(centroid_matrix)
 
+        if self._visualization:
+            self._plot_cloud_and_frame(point_cloud, "Centroid allignment")
         # Very liberally clean some points
         new_points = point_cloud.points
 
@@ -163,7 +165,7 @@ class FrameDetector:
         new_cloud = pv.PolyData(right_points) + pv.PolyData(left_points)
 
         if self._visualization:
-            self._plot_cloud_and_frame(new_cloud, "Centroid allignment")
+            self._plot_cloud_and_frame(new_cloud, "Only keep left/right")
 
         new_cloud.transform(centroid_inverse_matrix)
 

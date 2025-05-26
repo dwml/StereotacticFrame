@@ -22,6 +22,13 @@ def detect_blobs(
         if not 1 < label_statistics.GetPhysicalSize(label_idx) < 30.0:  # [mm²]
             continue
 
+        logging.debug(
+            f"Physical size of label {label_idx}: {label_statistics.GetPhysicalSize(label_idx)}"
+        )
+        logging.debug(
+            f"Mean of label {label_idx}: {label_statistics.GetMean(label_idx)}"
+        )
+
         if not label_statistics.GetMean(label_idx) > modality_thresholds[modality]:
             continue
 
