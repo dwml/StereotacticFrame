@@ -22,7 +22,7 @@ def _li_threshold() -> ImageToImageCallable:
 
 
 def _ct_pipeline(ct_image: sitk.Image) -> sitk.Image:
-    clamped = sitk.Clamp(ct_image, sitk.sitkFloat32, 512, 3072)
+    clamped = sitk.Clamp(ct_image, sitk.sitkFloat32, 128, 3072)
     frame = sitk.OtsuThreshold(clamped, 0, 1, 256)
     return sitk.BinaryMorphologicalClosing(frame, (5, 5, 5))
 
