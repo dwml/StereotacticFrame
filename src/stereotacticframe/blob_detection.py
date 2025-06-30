@@ -1,5 +1,6 @@
 import SimpleITK as sitk
 import logging
+import numpy as np
 
 
 def _get_label_statistics(label_img: sitk.Image, img: sitk.Image):
@@ -8,7 +9,7 @@ def _get_label_statistics(label_img: sitk.Image, img: sitk.Image):
     return label_statistics
 
 
-modality_thresholds = {"MR": 65, "CT": 750}
+modality_thresholds = {"MR": 75, "CT": 750}
 
 
 def detect_blobs(
@@ -19,19 +20,25 @@ def detect_blobs(
     blobs_list = []
 
     for label_idx in label_statistics.GetLabels():
-        if not 1 < label_statistics.GetPhysicalSize(label_idx) < 30.0:  # [mm²]
+        if not 1 < label_statistics.GetPhysicalSize(label_idx) < 50.0:  # [mm²]
             continue
+
+        cog = label_statistics.GetCenterOfGravity(label_idx)
+        cog_intensity = np.real(
+            img_slice.EvaluateAtPhysicalPoint(cog, interp=sitk.sitkNearestNeighbor)
+        )
 
         logging.debug(
             f"Physical size of label {label_idx}: {label_statistics.GetPhysicalSize(label_idx)}"
         )
+        logging.debug(f"Center of Gravity of label {label_idx}: {cog}")
         logging.debug(
-            f"Mean of label {label_idx}: {label_statistics.GetMean(label_idx)}"
+            f"Intensity at Center of Gravity of label {label_idx}: {cog_intensity}"
         )
 
-        if not label_statistics.GetMean(label_idx) > modality_thresholds[modality]:
+        if not cog_intensity > modality_thresholds[modality]:
             continue
 
-        blobs_list.append(label_statistics.GetCenterOfGravity(label_idx))
+        blobs_list.append(cog)
 
     return blobs_list
